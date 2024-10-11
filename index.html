@@ -132,12 +132,24 @@
                     borderColor: chartColor, // Use the specified color for each chart
                     borderWidth: 2,
                     fill: false,
-                    tension: 0.1
+                    tension: 0.3, // Increase line smoothing
+                    pointRadius: 5, // Increase point size for better tap target
+                    pointHoverRadius: 8 // Increase hover size
                 }]
             },
             options: {
                 responsive: true, // Make it responsive
                 maintainAspectRatio: false, // Prevent distortion on resize
+                interaction: {
+                    mode: 'nearest', // Ensure the closest point is selected on touch
+                    axis: 'x',
+                    intersect: false // Allow interaction even when not directly on a point
+                },
+                layout: {
+                    padding: {
+                        right: 20 // Add padding to ensure the final point is not hard to tap
+                    }
+                },
                 scales: {
                     x: {
                         type: 'time',
