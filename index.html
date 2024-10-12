@@ -10,6 +10,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <!-- Date adapter for Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <!-- Plugin for zooming and panning -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 
     <style>
         /* CSS for responsive canvas */
@@ -132,9 +134,9 @@
                     borderColor: chartColor, // Use the specified color for each chart
                     borderWidth: 2,
                     fill: false,
-                    tension: 0.3, // Increase line smoothing
-                    pointRadius: 5, // Increase point size for better tap target
-                    pointHoverRadius: 8 // Increase hover size
+                    tension: 0.3, // Line smoothing
+                    pointRadius: 3, // Smaller point size
+                    pointHoverRadius: 8 // Larger hover size for touch interaction
                 }]
             },
             options: {
@@ -166,6 +168,18 @@
                         title: {
                             display: true,
                             text: `${label} (${unit})`
+                        }
+                    }
+                },
+                plugins: {
+                    zoom: {
+                        pan: {
+                            enabled: true, // Enable panning
+                            mode: 'xy' // Allow panning both horizontally and vertically
+                        },
+                        zoom: {
+                            enabled: true, // Enable zooming
+                            mode: 'xy' // Allow zooming both horizontally and vertically
                         }
                     }
                 }
