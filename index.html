@@ -77,7 +77,7 @@
 
     // Function to continuously check and delete data older than 7 days for a given path
     function deleteOldData(variable) {
-        const dataRef = database.ref('FirebaseIOT/' + variable);
+        const dataRef = database.ref('/FirebaseIOT/readings/sensors/timed/' + variable);
 
         dataRef.on('value', (snapshot) => {
             const currentTime = Date.now();
@@ -101,7 +101,7 @@
 
     // Function to fetch and render data from Firebase for a specific variable
     function fetchDataAndRenderChart(variable, label, unit, chartId, chartColor) {
-        const dataRef = database.ref('FirebaseIOT/' + variable);
+        const dataRef = database.ref('/FirebaseIOT/readings/sensors/timed/' + variable);
 
         dataRef.on('value', (snapshot) => {
             const dataPoints = [];
