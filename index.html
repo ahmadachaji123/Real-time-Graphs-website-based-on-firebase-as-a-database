@@ -81,7 +81,7 @@
 
         dataRef.on('value', (snapshot) => {
             const currentTime = Date.now();
-            const sevenDaysAgo = currentTime - (7 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
+            const sevenDaysAgo = currentTime - (60 * 24 * 60 * 60 * 1000); // 7 days in milliseconds
 
             snapshot.forEach((childSnapshot) => {
                 const dataPoint = childSnapshot.val();
