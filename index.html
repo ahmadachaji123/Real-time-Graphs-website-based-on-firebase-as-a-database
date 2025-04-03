@@ -77,42 +77,50 @@
 
     // Function to continuously check and delete data older than 7 days for a given path
     function deleteOldData(variable) {
-     const dataRef = database.ref('/FirebaseIOT/readings/sensors/timed/' + variable);
-     const counterRef = database.ref('/FirebaseIOT/readings/sensors/timed/' + variable + '/dataPointCounter');
-     const currentTime = new Date().getTime();
-     const sevenDaysAgo = currentTime - (7 * 24 * 60 * 60 * 1000); // Data older than 7 days
+    const dataRef = database.ref('/FirebaseIOT/readings/sensors/timed/' + variable);
+    const counterRef = database.ref('/FirebaseIOT/readings/sensors/timed/' + variable + '/dataPointCounter');
+    const currentTime = new Date().getTime();
+    const sevenDaysAgo = currentTime - (7 * 24 * 60 * 60 * 1000); // Data older than 7 days
 
-     dataRef.once('value', (snapshot) => {
-        let deletedCount = 0; // Counter for how many data points are deleted
+    dataRef.once('value', (snapshot) => {
+        let deletePromises = []; // Array to store all delete promises
         
         snapshot.forEach((childSnapshot) => {
             const dataPoint = childSnapshot.val();
             const timestamp = new Date(dataPoint.timestamp).getTime();
 
             if (timestamp < sevenDaysAgo) {
-                childSnapshot.ref.remove()
+                let deletePromise = childSnapshot.ref.remove()
                     .then(() => {
                         console.log(`Deleted old data for ${variable}`);
-                        deletedCount++;  // Increment deleted counter
+                        return 1;  // Return 1 to count deleted items
                     })
                     .catch((error) => {
                         console.error(`Error deleting old data for ${variable}: `, error);
+                        return 0;  // Return 0 if deletion fails
                     });
+
+                deletePromises.push(deletePromise);
             }
         });
 
-        // Update the counter after deleting old data
-        if (deletedCount > 0) {
-            counterRef.transaction((currentCounter) => {
-                return (currentCounter || 0) - deletedCount;  // Decrement the counter by the number of deleted points
-            }).then(() => {
-                console.log(`Updated dataPointCounter for ${variable}`);
-            }).catch((error) => {
-                console.error(`Error updating dataPointCounter for ${variable}: `, error);
-            });
-        }
+        // Wait for all deletions to complete
+        Promise.all(deletePromises).then((deletedCounts) => {
+            let deletedTotal = deletedCounts.reduce((sum, count) => sum + count, 0); // Sum deleted points
+
+            if (deletedTotal > 0) {
+                counterRef.transaction((currentCounter) => {
+                    return (currentCounter || 0) - deletedTotal; // Reduce the counter correctly
+                }).then(() => {
+                    console.log(`Updated dataPointCounter for ${variable} by -${deletedTotal}`);
+                }).catch((error) => {
+                    console.error(`Error updating dataPointCounter for ${variable}: `, error);
+                });
+            }
+        });
     });
 }
+
 
     // Function to fetch and render data from Firebase for a specific variable
     function fetchDataAndRenderChart(variable, label, unit, chartId, chartColor) {
