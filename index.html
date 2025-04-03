@@ -80,7 +80,7 @@
      const dataRef = database.ref('/FirebaseIOT/readings/sensors/timed/' + variable);
      const counterRef = database.ref('/FirebaseIOT/readings/sensors/timed/' + variable + '/dataPointCounter');
      const currentTime = new Date().getTime();
-     const sevenDaysAgo = currentTime - (60 * 24 * 60 * 60 * 1000); // Data older than 7 days
+     const sevenDaysAgo = currentTime - (7 * 24 * 60 * 60 * 1000); // Data older than 7 days
 
      dataRef.once('value', (snapshot) => {
         let deletedCount = 0; // Counter for how many data points are deleted
