@@ -1,3 +1,2 @@
-Real time Graphs that demonstrate the temperature, humidity, oxygen, and heart rate data. Those data are coming from the online database from Firebase.
-Those graphs shows the value and the time of each reading.
-This code will delet automatically the old data (data less then 7 days), in other wordes it will demonstrate the data of the last seven days only. 
+Real-time graphs display temperature, humidity, oxygen, and heart rate data.
+These data are retrieved from an online Firebase database. The graphs show both the value and the timestamp of each reading. The code automatically deletes data older than seven days, ensuring that only data from the past seven days are displayed.
