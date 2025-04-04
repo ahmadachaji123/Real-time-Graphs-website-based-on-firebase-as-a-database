@@ -219,13 +219,13 @@
         deleteOldData('temperature');
         deleteOldData('humidity');
         deleteOldData('oxygen');
-        deleteOldData('heart rate');
+        deleteOldData('heartRate');
 
         // Fetch and render data for each variable with their respective colors
         fetchDataAndRenderChart('temperature', 'Temperature', '°C', 'temperatureChart', 'rgba(255, 99, 132, 1)');
         fetchDataAndRenderChart('humidity', 'Humidity', '%', 'humidityChart', 'rgba(54, 162, 235, 1)');
         fetchDataAndRenderChart('oxygen', 'Oxygen Levels', '%', 'oxygenChart', 'rgba(75, 192, 192, 1)');
-        fetchDataAndRenderChart('heart rate', 'Heart Rate', 'bpm', 'heartRateChart', 'rgba(153, 102, 255, 1)');
+        fetchDataAndRenderChart('heartRate', 'Heart Rate', 'bpm', 'heartRateChart', 'rgba(153, 102, 255, 1)');
     };
 </script>
 
