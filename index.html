@@ -28,9 +28,49 @@
             background-color: #f4f4f4;
         }
 
+        .chart-wrapper {
+            margin-bottom: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .chart-title {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .chart-btn {
+            padding: 5px 10px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .chart-btn:hover {
+            background: #e0e0e0;
+        }
+
         .chart-container {
+            position: relative;
             width: 100%;
-            margin-bottom: 20px;
             height: 300px;
         }
 
@@ -39,22 +79,76 @@
             .chart-container {
                 height: 250px;
             }
+            .chart-btn {
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+            .chart-title {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="chart-container">
-        <canvas id="temperatureChart"></canvas>
+    <!-- Temperature Chart -->
+    <div class="chart-wrapper">
+        <div class="chart-header">
+            <div class="chart-title">Temperature (°C)</div>
+            <div class="chart-controls">
+                <button class="chart-btn zoom-in" data-chart="temperatureChart">+</button>
+                <button class="chart-btn zoom-out" data-chart="temperatureChart">-</button>
+                <button class="chart-btn reset-zoom" data-chart="temperatureChart">Reset</button>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="temperatureChart"></canvas>
+        </div>
     </div>
-    <div class="chart-container">
-        <canvas id="humidityChart"></canvas>
+
+    <!-- Humidity Chart -->
+    <div class="chart-wrapper">
+        <div class="chart-header">
+            <div class="chart-title">Humidity (%)</div>
+            <div class="chart-controls">
+                <button class="chart-btn zoom-in" data-chart="humidityChart">+</button>
+                <button class="chart-btn zoom-out" data-chart="humidityChart">-</button>
+                <button class="chart-btn reset-zoom" data-chart="humidityChart">Reset</button>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="humidityChart"></canvas>
+        </div>
     </div>
-    <div class="chart-container">
-        <canvas id="oxygenChart"></canvas>
+
+    <!-- Oxygen Chart -->
+    <div class="chart-wrapper">
+        <div class="chart-header">
+            <div class="chart-title">Oxygen Levels (%)</div>
+            <div class="chart-controls">
+                <button class="chart-btn zoom-in" data-chart="oxygenChart">+</button>
+                <button class="chart-btn zoom-out" data-chart="oxygenChart">-</button>
+                <button class="chart-btn reset-zoom" data-chart="oxygenChart">Reset</button>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="oxygenChart"></canvas>
+        </div>
     </div>
-    <div class="chart-container">
-        <canvas id="heartRateChart"></canvas>
+
+    <!-- Heart Rate Chart -->
+    <div class="chart-wrapper">
+        <div class="chart-header">
+            <div class="chart-title">Heart Rate (bpm)</div>
+            <div class="chart-controls">
+                <button class="chart-btn zoom-in" data-chart="heartRateChart">+</button>
+                <button class="chart-btn zoom-out" data-chart="heartRateChart">-</button>
+                <button class="chart-btn reset-zoom" data-chart="heartRateChart">Reset</button>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="heartRateChart"></canvas>
+        </div>
     </div>
 
 <script>
@@ -134,7 +228,7 @@
                 });
             });
 
-            // Sort data points by timestamp (Option 2 implementation)
+            // Sort data points by timestamp
             dataPoints.sort((a, b) => a.x - b.x);
 
             renderChart(dataPoints, label, unit, chartId, chartColor);
@@ -143,7 +237,7 @@
         });
     }
 
-    // Function to render the chart
+    // Function to render the chart with enhanced zoom controls
     function renderChart(dataPoints, label, unit, chartId, chartColor) {
         if (charts[chartId]) {
             charts[chartId].destroy();
@@ -158,9 +252,10 @@
                     borderColor: chartColor,
                     borderWidth: 2,
                     fill: false,
-                    tension: 0.3,
+                    tension: 0.1,
                     pointRadius: 3,
-                    pointHoverRadius: 8
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: chartColor
                 }]
             },
             options: {
@@ -170,11 +265,6 @@
                     mode: 'nearest',
                     axis: 'x',
                     intersect: false
-                },
-                layout: {
-                    padding: {
-                        right: 20
-                    }
                 },
                 scales: {
                     x: {
@@ -192,31 +282,42 @@
                             text: 'Date'
                         },
                         ticks: {
-                            source: 'data'
+                            source: 'data',
+                            maxRotation: 0,
+                            autoSkip: true
                         }
                     },
                     y: {
-                        beginAtZero: false,
                         title: {
                             display: true,
                             text: `${label} (${unit})`
-                        }
+                        },
+                        grace: '5%'
                     }
                 },
                 plugins: {
                     zoom: {
+                        limits: {
+                            x: { min: 'original', max: 'original' },
+                            y: { min: 'original', max: 'original' }
+                        },
                         pan: {
                             enabled: true,
-                            mode: 'xy'
+                            mode: 'xy',
+                            threshold: 10
                         },
                         zoom: {
                             wheel: {
-                                enabled: true
+                                enabled: true,
+                                speed: 0.1,
+                                modifierKey: 'ctrl'
                             },
                             pinch: {
                                 enabled: true
                             },
-                            mode: 'xy'
+                            mode: 'xy',
+                            scaleMode: 'xy',
+                            speed: 0.1
                         }
                     },
                     tooltip: {
@@ -225,6 +326,9 @@
                                 return new Date(context[0].parsed.x).toLocaleString();
                             }
                         }
+                    },
+                    legend: {
+                        display: false
                     }
                 }
             }
@@ -247,6 +351,34 @@
         fetchDataAndRenderChart('humidity', 'Humidity', '%', 'humidityChart', 'rgba(54, 162, 235, 1)');
         fetchDataAndRenderChart('oxygen', 'Oxygen Levels', '%', 'oxygenChart', 'rgba(75, 192, 192, 1)');
         fetchDataAndRenderChart('heartRate', 'Heart Rate', 'bpm', 'heartRateChart', 'rgba(153, 102, 255, 1)');
+
+        // Add event listeners for all control buttons
+        document.querySelectorAll('.zoom-in').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const chartId = btn.getAttribute('data-chart');
+                if (charts[chartId]) {
+                    charts[chartId].zoom(1.2);
+                }
+            });
+        });
+
+        document.querySelectorAll('.zoom-out').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const chartId = btn.getAttribute('data-chart');
+                if (charts[chartId]) {
+                    charts[chartId].zoom(0.8);
+                }
+            });
+        });
+
+        document.querySelectorAll('.reset-zoom').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const chartId = btn.getAttribute('data-chart');
+                if (charts[chartId]) {
+                    charts[chartId].resetZoom();
+                }
+            });
+        });
     };
 </script>
 </body>
